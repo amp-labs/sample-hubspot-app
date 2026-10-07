@@ -1,7 +1,10 @@
 <br/>
 <div align="center">
     <a href="https://www.withampersand.com/?utm_source=github&utm_medium=readme&utm_campaign=sample-hubspot-app&utm_content=logo">
-    <img src="https://res.cloudinary.com/dycvts6vp/image/upload/v1723671980/ampersand-logo-black.svg" height="30" align="center" alt="Ampersand logo" >
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/amp-labs/docs/main/src/logos/dark.png">
+      <img src="https://raw.githubusercontent.com/amp-labs/docs/main/src/logos/light.png" height="30" align="center" alt="Ampersand logo">
+    </picture>
     </a>
 <br/>
 <br/>

@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+# HubSpot CLI config and profiles can hold account IDs and keys
+hubspot.config.yml
+hsprofile.*.json

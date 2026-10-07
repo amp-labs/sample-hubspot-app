@@ -1,0 +1,25 @@
+{
+  "uid": "ampersand_subscribe_actions",
+  "type": "webhooks",
+  "config": {
+    "settings": {
+      "targetUrl": "https://subscribe-webhook.withampersand.com/v1/projects/PROJECT_ID/integrations/INTEGRATION_ID",
+      "maxConcurrentRequests": 50
+    },
+    "subscriptions": {
+      "crmObjects": [
+        { "subscriptionType": "object.creation", "objectType": "contact", "active": true },
+        { "subscriptionType": "object.propertyChange", "objectType": "contact", "propertyName": "lifecyclestage", "active": true },
+        { "subscriptionType": "object.deletion", "objectType": "contact", "active": true },
+
+        { "subscriptionType": "object.creation", "objectType": "deal", "active": true },
+        { "subscriptionType": "object.propertyChange", "objectType": "deal", "propertyName": "dealstage", "active": true },
+        { "subscriptionType": "object.deletion", "objectType": "deal", "active": true },
+
+        { "subscriptionType": "object.creation", "objectType": "company", "active": false },
+        { "subscriptionType": "object.propertyChange", "objectType": "company", "propertyName": "name", "active": false },
+        { "subscriptionType": "object.deletion", "objectType": "company", "active": false }
+      ]
+    }
+  }
+}

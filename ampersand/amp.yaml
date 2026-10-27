@@ -1,0 +1,155 @@
+specVersion: 1.0.0
+integrations:
+  - name: hubspotIntegration # If you rename this, use the new name wherever you embed the Ampersand UI components.
+    displayName: HubSpot Integration
+    provider: hubspot
+    module: crm
+
+    # TIPS TO AVOID COMMON ERRORS
+    # - Every object you add here needs its scopes in ../hubspot-app/src/app/app-hsmeta.json
+    #   AND in the Ampersand Dashboard (Provider apps > HubSpot). See the README.
+    # - Prefer a short `optionalFields` list over `optionalFieldsAuto: all`.
+    #   HubSpot accounts with many custom properties can fail with "414 URI Too Long"
+    #   when every field is read.
+
+    # Read actions: sync records to your destination on a schedule.
+    # See https://docs.withampersand.com/read-actions
+    read:
+      objects:
+        - objectName: contacts
+          destination: defaultWebhook # Create this destination in the Ampersand Dashboard.
+          schedule: "*/10 * * * *" # Every 10 minutes.
+          requiredFields:
+            - fieldName: id
+            - fieldName: firstname
+            - fieldName: lastname
+            - fieldName: email
+            - fieldName: lifecyclestage
+          # Fields your customers can choose to share.
+          optionalFields:
+            - fieldName: phone
+            - fieldName: jobtitle
+            - fieldName: company
+            - fieldName: hubspot_owner_id
+          backfill:
+            defaultPeriod:
+              fullHistory: true
+
+        - objectName: companies
+          destination: defaultWebhook
+          schedule: "*/10 * * * *"
+          requiredFields:
+            - fieldName: id
+            - fieldName: name
+            - fieldName: domain
+          optionalFields:
+            - fieldName: industry
+            - fieldName: phone
+            - fieldName: annualrevenue
+            - fieldName: numberofemployees
+            - fieldName: hubspot_owner_id
+          backfill:
+            defaultPeriod:
+              fullHistory: true
+
+        - objectName: deals
+          destination: defaultWebhook
+          schedule: "*/10 * * * *"
+          requiredFields:
+            - fieldName: id
+            - fieldName: dealname
+            - fieldName: amount
+            - fieldName: dealstage
+            - fieldName: closedate
+          optionalFields:
+            - fieldName: pipeline
+            - fieldName: hubspot_owner_id
+          backfill:
+            defaultPeriod:
+              fullHistory: true
+
+        # --- More objects: uncomment what you need, and enable the scopes listed. ---
+
+        # Tickets. Scopes: crm.objects.tickets.read (and .write to write tickets)
+        # - objectName: tickets
+        #   destination: defaultWebhook
+        #   schedule: "*/10 * * * *"
+        #   requiredFields:
+        #     - fieldName: id
+        #     - fieldName: subject
+        #     - fieldName: hs_pipeline_stage
+        #   backfill:
+        #     defaultPeriod:
+        #       fullHistory: true
+
+        # Emails logged on records. Scope: sales-email-read
+        # (without it, emails show no fields and reads fail).
+        # - objectName: emails
+        #   destination: defaultWebhook
+        #   schedule: "*/10 * * * *"
+        #   requiredFields:
+        #     - fieldName: id
+        #     - fieldName: hs_email_subject
+        #     - fieldName: hs_timestamp
+        #   backfill:
+        #     defaultPeriod:
+        #       days: 30
+
+    # Write actions: create and update records in your customers' HubSpot.
+    # See https://docs.withampersand.com/write-actions
+    write:
+      objects:
+        - objectName: contacts
+        - objectName: companies
+        - objectName: deals
+        # - objectName: tickets # Scope: crm.objects.tickets.write
+
+    # Subscribe actions: get changes in real time.
+    # See https://docs.withampersand.com/subscribe-actions
+    # HubSpot only sends these events if the matching subscriptions are turned on in
+    # ../hubspot-app/src/app/webhooks/webhooks-hsmeta.json. Keep the two files in sync:
+    # turn on only the events you subscribe to here, or HubSpot sends you events you don't use.
+    subscribe:
+      objects:
+        - objectName: contacts
+          destination: defaultWebhook
+          inheritFieldsAndMapping: true # Uses the fields from the read action above.
+          createEvent:
+            enabled: always
+          updateEvent:
+            enabled: always
+            requiredWatchFields:
+              - lifecyclestage # Must match a "propertyChange" subscription in webhooks-hsmeta.json.
+          deleteEvent:
+            enabled: always
+
+        - objectName: deals
+          destination: defaultWebhook
+          inheritFieldsAndMapping: true
+          createEvent:
+            enabled: always
+          updateEvent:
+            enabled: always
+            requiredWatchFields:
+              - dealstage
+          deleteEvent:
+            enabled: always
+
+        # To subscribe to companies, uncomment this block and set the company
+        # subscriptions in webhooks-hsmeta.json to "active": true.
+        # - objectName: companies
+        #   destination: defaultWebhook
+        #   inheritFieldsAndMapping: true
+        #   createEvent:
+        #     enabled: always
+        #   updateEvent:
+        #     enabled: always
+        #     requiredWatchFields:
+        #       - name
+        #   deleteEvent:
+        #     enabled: always
+
+    # Proxy actions: call any HubSpot API directly through Ampersand.
+    # See https://docs.withampersand.com/proxy-actions
+    proxy:
+      enabled: true
